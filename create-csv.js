@@ -1,5 +1,5 @@
 "use strict"
-const BITBOXCli = require("bitbox-cli/lib/bitbox-cli").default
+const BITBOXCli = require("bitbox-sdk")
 const BITBOX = new BITBOXCli()
 const converter = require("json-2-csv")
 const fs = require("fs")
@@ -47,7 +47,10 @@ const main = async () => {
       const masterHDNode = BITBOX.HDNode.fromSeed(rootSeed)
 
       // HDNode of BIP44 account
-      const account = BITBOX.HDNode.derivePath(masterHDNode, mnemonicObj.hdpath)
+      const account = BITBOX.HDNode.derivePath(
+        masterHDNode,
+        mnemonicObj.mothership.hdPath
+      )
 
       for (let i = 0; i < result.addressCount; i++) {
         const node = BITBOX.HDNode.derivePath(
