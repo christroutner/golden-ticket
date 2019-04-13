@@ -15,7 +15,9 @@ This repository is forked from
 
 ## Installation
 
-Install [NodeJS](http://nodejs.org/) LTS version 8.x.
+[Step-by-step Video Instructions](https://youtu.be/qFGjQ277h_A)
+
+Install [NodeJS](http://nodejs.org/) LTS version 8.x or greater.
 
 Clone the repo
 
@@ -44,8 +46,8 @@ just funded.
 - `npm run fund-addresses` will fund each child by evenly distributing the BCH
 funded to the mothership address.
 
-- `npm run generate-stats` generate statistics about which tip addresses have
-been claimed (or not).
+- `npm run check-addresses` generate a CSV file listing each tip address and
+weather or not they have been claimed (or not).
 
 - `npm run reclaim-funds` reclaim any unspent tips by sending them to an address
 of your choosing.
