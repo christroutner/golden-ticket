@@ -6,18 +6,14 @@
 
 const BITBOXSDK = require("bitbox-sdk")
 const BITBOX = new BITBOXSDK()
-const prompt = require("prompt")
 
 // Open the wallet generated with generate-wallet.
 const main = async () => {
-  // start the prompt to get user input
-  prompt.start()
+  try {
+    const wfn = `motherShipWallet.json`
+    const filename = `${__dirname}/../output/wallets/${wfn}`
 
-  const wfn = `motherShipWallet.json`
-  const filename = `${__dirname}/../output/wallets/${wfn}`
-
-  // ask for language, hdpath and walletFileName
-  prompt.get(["addressCount"], async (err, result) => {
+    // ask for language, hdpath and walletFileName
     let mnemonicObj
     try {
       mnemonicObj = require(filename)
@@ -28,8 +24,10 @@ const main = async () => {
       )
       process.exit(0)
     }
+    //console.log(`mnemonicObj: ${JSON.stringify(mnemonicObj, null, 2)}`)
 
-    const addressCount = result.addressCount
+    const addressCount = mnemonicObj.mothership.children
+    //console.log(`addressCount: ${addressCount}`)
 
     const rootSeed = BITBOX.Mnemonic.toSeed(mnemonicObj.mnemonic)
 
@@ -69,7 +67,7 @@ const main = async () => {
     const sendAmount = originalAmount - byteCount
 
     const iterator = 0
-    for (let i = iterator; i < Number(addressCount) + iterator; i++) {
+    for (let i = iterator; i < addressCount + iterator; i++) {
       // derive the ith external change address HDNode
       const node = BITBOX.HDNode.derivePath(account, `0/${i}`)
 
@@ -105,9 +103,11 @@ const main = async () => {
     console.log("HEX: ", hex)
 
     // sendRawTransaction to running BCH node
-    const success = await BITBOX.RawTransactions.sendRawTransaction(hex)
-    console.log("Success! TXID: ", success)
-  })
+    //const success = await BITBOX.RawTransactions.sendRawTransaction(hex)
+    //console.log("Success! TXID: ", success)
+  } catch (err) {
+    console.error(`Error: `, err)
+  }
 }
 
 main()

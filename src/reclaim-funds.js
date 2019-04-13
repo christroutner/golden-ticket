@@ -1,4 +1,9 @@
+/*
+  Reclaim unspent funds.
+*/
+
 "use strict"
+
 const BITBOXCli = require("bitbox-sdk")
 const BITBOX = new BITBOXCli()
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
