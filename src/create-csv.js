@@ -16,69 +16,63 @@ const main = async () => {
   prompt.start()
 
   // ask for language, hdpath and walletFileName
-  prompt.get(
-    ["eventName", "hdAccount", "addressCount"],
-    async (err, result) => {
-      const json2csvCallback = (err, csv) => {
-        if (err) throw err
-        fs.writeFile(`${result.eventName}.csv`, csv, err => {
-          if (err) return console.error(err)
+  prompt.get(["eventName", "addressCount"], async (err, result) => {
+    const json2csvCallback = (err, csv) => {
+      if (err) throw err
+      fs.writeFile(`${result.eventName}.csv`, csv, err => {
+        if (err) return console.error(err)
 
-          console.log(chalk.green("All done."), emoji.get(":white_check_mark:"))
-          console.log(
-            emoji.get(":rocket:"),
-            `${result.eventName} written successfully.`
-          )
-        })
-      }
-      let mnemonicObj
-      try {
-        mnemonicObj = require(`./goldenTicketWallet.json`)
-      } catch (err) {
+        console.log(chalk.green("All done."), emoji.get(":white_check_mark:"))
         console.log(
-          `Could not open goldenTicketWallet.json. Generate a wallet with generate-wallet first.
-      Exiting.`
+          emoji.get(":rocket:"),
+          `${result.eventName} written successfully.`
         )
-        process.exit(0)
-      }
-
-      // root seed buffer
-      const rootSeed = BITBOX.Mnemonic.toSeed(mnemonicObj.mnemonic)
-
-      // master HDNode
-      const masterHDNode = BITBOX.HDNode.fromSeed(rootSeed)
-
-      // BIP44
-      const bip44 = BITBOX.HDNode.derivePath(masterHDNode, "m/44'/145'")
-
-      for (let i = 0; i < result.addressCount; i++) {
-        const node = BITBOX.HDNode.derivePath(
-          bip44,
-          `${result.hdAccount}'/0/${i}`
-        )
-
-        // get the cash address
-        const cashAddress = BITBOX.HDNode.toCashAddress(node)
-
-        // get the priv key in wallet import format
-        const wif = BITBOX.HDNode.toWIF(node)
-
-        const obj = {
-          cashAddress: cashAddress,
-          wif: wif,
-          claimed: false
-        }
-
-        if (i <= 199) obj.value = 0.005
-        else if (i >= 200 && i <= 349) obj.value = 0.006
-        else if (i >= 350 && i <= 399) obj.value = 0.02
-
-        addresses.push(obj)
-        console.log(i, cashAddress, wif, obj.value, obj.claimed)
-      }
-      converter.json2csv(addresses, json2csvCallback)
+      })
     }
-  )
+    let mnemonicObj
+    try {
+      mnemonicObj = require(`${__dirname}/../output/wallets/motherShipWallet.json`)
+    } catch (err) {
+      console.log(
+        `Could not open motherShipWallet.json. Generate a wallet with generate-wallet first.
+      Exiting.`
+      )
+      process.exit(0)
+    }
+
+    // root seed buffer
+    const rootSeed = BITBOX.Mnemonic.toSeed(mnemonicObj.mnemonic)
+
+    // master HDNode
+    const masterHDNode = BITBOX.HDNode.fromSeed(rootSeed)
+
+    // BIP44
+    const bip44 = BITBOX.HDNode.derivePath(masterHDNode, "m/44'/145'")
+
+    for (let i = 0; i < result.addressCount; i++) {
+      const node = BITBOX.HDNode.derivePath(bip44, `0'/0/${i}`)
+
+      // get the cash address
+      const cashAddress = BITBOX.HDNode.toCashAddress(node)
+
+      // get the priv key in wallet import format
+      const wif = BITBOX.HDNode.toWIF(node)
+
+      const obj = {
+        cashAddress: cashAddress,
+        wif: wif,
+        claimed: false
+      }
+
+      if (i <= 199) obj.value = 0.005
+      else if (i >= 200 && i <= 349) obj.value = 0.006
+      else if (i >= 350 && i <= 399) obj.value = 0.02
+
+      addresses.push(obj)
+      console.log(i, cashAddress, wif, obj.value, obj.claimed)
+    }
+    converter.json2csv(addresses, json2csvCallback)
+  })
 }
 
 main()

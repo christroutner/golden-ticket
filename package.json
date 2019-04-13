@@ -24,7 +24,7 @@
   },
   "scripts": {
     "generate-wallet": "node src/generate-wallet.js",
-    "create-addresses": "node create-addresses.js",
+    "create-addresses": "node src/create-addresses.js",
     "create-csv": "node create-csv.js",
     "fund-mothership": "node fund-mothership.js",
     "fund-addresses": "node fund-addresses.js",

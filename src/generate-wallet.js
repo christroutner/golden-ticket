@@ -1,4 +1,9 @@
+/*
+  Generates the mothership wallet, which is used to fund all the children QR codes.
+*/
+
 "use strict"
+
 const BITBOXSDK = require("bitbox-sdk")
 const BITBOX = new BITBOXSDK()
 const fs = require("fs")
