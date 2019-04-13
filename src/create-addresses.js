@@ -31,7 +31,7 @@ const main = async () => {
     process.exit(0)
   }
 
-  const addressCount = mnemonicObj.children
+  const addressCount = mnemonicObj.mothership.children
 
   // create needed directory structure
   const htmlDir = `${__dirname}/../output/html`

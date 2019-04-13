@@ -17,4 +17,23 @@ const htmlTemplate = function(wifQR) {
 `
 }
 
-module.exports = htmlTemplate
+const htmlTemplate2 = function(wifQR) {
+  return `
+  <body style="padding: 0; margin: 0;">
+    <div style="border: 1px solid black; width: 350px; height: 400px; padding: 25px;">
+      <center>
+      <p>Here is a tip in Bitcoin Cash!</p>
+      <p>Scan the QR code below with a BCH wallet to collect your tip.</p>
+      <img src='data:image/png;base64,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' />
+      <p>Need a wallet? Get one here:</p>
+      </center>
+      <ul style="padding-left: 75px;">
+      <li>Phone: wallet.bitcoin.com</li>
+      <li>Web Browser: badger.bitcoin.com</li>
+      </ul>
+    </div>
+  </body>
+`
+}
+
+module.exports = htmlTemplate2
