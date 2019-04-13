@@ -103,8 +103,8 @@ const main = async () => {
     console.log("HEX: ", hex)
 
     // sendRawTransaction to running BCH node
-    //const success = await BITBOX.RawTransactions.sendRawTransaction(hex)
-    //console.log("Success! TXID: ", success)
+    const success = await BITBOX.RawTransactions.sendRawTransaction(hex)
+    console.log("Success! TXID: ", success)
   } catch (err) {
     console.error(`Error: `, err)
   }
