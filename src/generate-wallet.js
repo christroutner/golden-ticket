@@ -13,8 +13,14 @@ const qrcode = require("qrcode-terminal")
 const emoji = require("node-emoji")
 const chalk = require("chalk")
 const prompt = require("prompt")
+const mkdirp = require("mkdirp")
 
 const main = async () => {
+  // Create directories if they don't yet exist.
+  mkdirp(`${__dirname}/../output`, err => {})
+  mkdirp(`${__dirname}/../output/wallets`, err => {})
+  mkdirp(`${__dirname}/../output/csv`, err => {})
+
   // start the prompt to get user input
   prompt.start()
 

@@ -3,85 +3,66 @@ const BITBOXSDK = require("bitbox-sdk")
 const BITBOX = new BITBOXSDK()
 const converter = require("json-2-csv")
 const fs = require("fs")
-const prompt = require("prompt")
 const addresses = []
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 
 // Open the wallet generated with generate-wallet.
 const main = async () => {
-  // start the prompt to get user input
-  prompt.start()
+  const wfn = `motherShipWallet.json`
+  const filename = `${__dirname}/../output/wallets/${wfn}`
 
-  // ask for language, hdpath and walletFileName
-  prompt.get(
-    ["eventName", "hdAccount", "addressCount"],
-    async (err, result) => {
-      // eventName
-      const eventName = result.eventName
-
-      // hdAccount
-      const hdAccount = result.hdAccount
-
-      // address count
-      const addressCount = result.addressCount
-
-      const json2csvCallback = (err, csv) => {
-        if (err) throw err
-        fs.writeFile(`${eventName}-final.csv`, csv, err => {
-          if (err) return console.error(err)
-          console.log(`${eventName}-final.csv written successfully.`)
-        })
-      }
-      let mnemonicObj
-      try {
-        mnemonicObj = require(`./goldenTicketWallet.json`)
-      } catch (err) {
-        console.log(
-          `Could not open goldenTicketWallet.json. Generate a mnemonic with generate-wallet first.
+  let mnemonicObj
+  try {
+    mnemonicObj = require(filename)
+  } catch (err) {
+    console.log(
+      `Could not open goldenTicketWallet.json. Generate a mnemonic with generate-wallet first.
       Exiting.`
-        )
-        process.exit(0)
-      }
+    )
+    process.exit(0)
+  }
 
-      // root seed buffer
-      const rootSeed = BITBOX.Mnemonic.toSeed(mnemonicObj.mnemonic)
+  const addressCount = mnemonicObj.mothership.children
 
-      // master HDNode
-      const masterHDNode = BITBOX.HDNode.fromSeed(rootSeed)
+  // root seed buffer
+  const rootSeed = BITBOX.Mnemonic.toSeed(mnemonicObj.mnemonic)
 
-      // HDNode of BIP44 account
-      const bip44 = BITBOX.HDNode.derivePath(masterHDNode, `m/44'/145'`)
-      for (let i = 0; i <= addressCount; i++) {
-        await sleep(1100)
-        // derive the ith external change address HDNode
-        const node = BITBOX.HDNode.derivePath(bip44, `${hdAccount}'/0/${i}`)
+  // master HDNode
+  const masterHDNode = BITBOX.HDNode.fromSeed(rootSeed)
 
-        // get the cash address
-        const cashAddress = BITBOX.HDNode.toCashAddress(node)
-        const details = await BITBOX.Address.details([cashAddress])
+  // HDNode of BIP44 account
+  const bip44 = BITBOX.HDNode.derivePath(masterHDNode, `m/44'/145'`)
+  for (let i = 0; i <= addressCount; i++) {
+    await sleep(1100)
+    // derive the ith external change address HDNode
+    const node = BITBOX.HDNode.derivePath(bip44, `0'/0/${i}`)
 
-        const wif = BITBOX.HDNode.toWIF(node)
+    // get the cash address
+    const cashAddress = BITBOX.HDNode.toCashAddress(node)
+    const details = await BITBOX.Address.details([cashAddress])
 
-        let value
-        if (i <= 918) value = 1
-        else if (i >= 919 && i <= 968) value = 2
-        else if (i >= 969 && i <= 988) value = 5
-        else if (i >= 989 && i <= 998) value = 10
-        else if (i === 999) value = 500
+    const wif = BITBOX.HDNode.toWIF(node)
 
-        const obj = {
-          cashAddress: cashAddress,
-          wif: wif,
-          claimed: details[0].balance === 0
-        }
-        obj.value = value
+    const value = 1
 
-        addresses.push(obj)
-        console.log(i, cashAddress, wif, value, obj.claimed)
-      }
-      converter.json2csv(addresses, json2csvCallback)
+    const obj = {
+      cashAddress: cashAddress,
+      wif: wif,
+      claimed: details[0].balance === 0
     }
-  )
-}
+    obj.value = value
 
+    addresses.push(obj)
+    console.log(i, cashAddress, wif, value, obj.claimed)
+  }
+  converter.json2csv(addresses, json2csvCallback)
+}
 main()
+
+function json2csvCallback(err, csv) {
+  if (err) throw err
+  fs.writeFile(`${__dirname}/../output/csv/check-addresses.csv`, csv, err => {
+    if (err) return console.error(err)
+    console.log(`check-addresses.csv written successfully.`)
+  })
+}
