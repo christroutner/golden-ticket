@@ -28,7 +28,7 @@ const main = async () => {
   prompt.get(["eventName", "addressCount"], async (err, result) => {
     let mnemonicObj
     try {
-      mnemonicObj = require(`${__dirname}/../output/wallets/goldenTicketWallet.json`)
+      mnemonicObj = require(`${__dirname}/../output/wallets/motherShipWallet.json`)
     } catch (err) {
       console.log(
         `Could not open mnemonic.json. Generate a mnemonic with generate-wallet first.
