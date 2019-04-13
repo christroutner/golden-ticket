@@ -1,7 +1,7 @@
 ## Tip BCH
 This a node.js app that generates Bitcoin Cash tips.
 
-![Tip Example](images/example200.jpg)
+![Tip Example](images/example300.jpg)
 
 The tips are generated as a series of PDF files, which can be printed out and
 physically handed out. Recievers can scan the QR code with a BCH wallet to claim
