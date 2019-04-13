@@ -1,5 +1,7 @@
 /*
   Generates the mothership wallet, which is used to fund all the children QR codes.
+  The 'number of children' is the number of children address to generate as
+  tips/QR codes to scan.
 */
 
 "use strict"
@@ -16,8 +18,27 @@ const main = async () => {
   // start the prompt to get user input
   prompt.start()
 
+  console.log(
+    `Select the language for the mnemonic. Default is english.
+    Also enter the number of children wallets that will be created and funded.
+    `
+  )
+
   // ask for language, hdpath and walletFileName
-  prompt.get(["language"], (err, result) => {
+  prompt.get(["language", "children"], (err, result) => {
+    // Validate the children input.
+    let children
+    try {
+      children = parseInt(result.children)
+      //console.log(`children: ${children}`)
+
+      if (isNaN(children)) throw new Error("bad data")
+      if (children < 1) throw new Error("bad data")
+    } catch (err) {
+      console.log(`number of children needs to be a positive integer.`)
+      return
+    }
+
     // generate mnemonic based on language input. Default to english
     const mnemonic = BITBOX.Mnemonic.generate(
       128,
@@ -58,7 +79,8 @@ const main = async () => {
       mnemonic: mnemonic,
       mothership: {
         hdPath: mothershipHDPath,
-        address: mothershipAddress
+        address: mothershipAddress,
+        children: children
       }
     }
 

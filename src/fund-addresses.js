@@ -1,4 +1,9 @@
+/*
+  Funds the children addresses from the mothership wallet.
+*/
+
 "use strict"
+
 const BITBOXSDK = require("bitbox-sdk")
 const BITBOX = new BITBOXSDK()
 const prompt = require("prompt")
@@ -8,14 +13,17 @@ const main = async () => {
   // start the prompt to get user input
   prompt.start()
 
+  const wfn = `motherShipWallet.json`
+  const filename = `${__dirname}/../output/wallets/${wfn}`
+
   // ask for language, hdpath and walletFileName
-  prompt.get(["hdAccount", "addressCount"], async (err, result) => {
+  prompt.get(["addressCount"], async (err, result) => {
     let mnemonicObj
     try {
-      mnemonicObj = require(`./goldenTicketWallet.json`)
+      mnemonicObj = require(filename)
     } catch (err) {
       console.log(
-        `Could not open goldenTicketWallet.json. Generate a mnemonic with generate-wallet first.
+        `Could not open ${wfn}. Generate a mnemonic with generate-wallet first.
       Exiting.`
       )
       process.exit(0)
@@ -37,10 +45,7 @@ const main = async () => {
     // return
 
     // HDNode of BIP44 account
-    const account = BITBOX.HDNode.derivePath(
-      masterHDNode,
-      `m/44'/145'/${result.hdAccount ? result.hdAccount : 0}'`
-    )
+    const account = BITBOX.HDNode.derivePath(masterHDNode, `m/44'/145'/0'`)
 
     const utxos = await BITBOX.Address.utxo(mothershipAddress)
     console.log(utxos.utxos[0])

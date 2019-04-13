@@ -8,7 +8,6 @@
 const BITBOXSDK = require("bitbox-sdk")
 const BITBOX = new BITBOXSDK()
 const QRCode = require("qrcode")
-const prompt = require("prompt")
 const touch = require("touch")
 const mkdirp = require("mkdirp")
 const fs = require("fs")
@@ -21,104 +20,91 @@ const htmlTemplate = require("./html-template")
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 // Open the wallet generated with generate-wallet.
 const main = async () => {
-  // start the prompt to get user input
-  prompt.start()
-
-  // ask for language, hdpath and walletFileName
-  prompt.get(["eventName", "addressCount"], async (err, result) => {
-    let mnemonicObj
-    try {
-      mnemonicObj = require(`${__dirname}/../output/wallets/motherShipWallet.json`)
-    } catch (err) {
-      console.log(
-        `Could not open mnemonic.json. Generate a mnemonic with generate-wallet first.
+  let mnemonicObj
+  try {
+    mnemonicObj = require(`${__dirname}/../output/wallets/motherShipWallet.json`)
+  } catch (err) {
+    console.log(
+      `Could not open mnemonic.json. Generate a mnemonic with generate-wallet first.
       Exiting.`
+    )
+    process.exit(0)
+  }
+
+  const addressCount = mnemonicObj.children
+
+  // create needed directory structure
+  const htmlDir = `${__dirname}/../output/html`
+  mkdirp(`${htmlDir}`, err => {})
+  mkdirp(`${htmlDir}/privKeyWIFs`, err => {})
+
+  const pdfDir = `${__dirname}/../output/pdf`
+  mkdirp(`${pdfDir}`, err => {})
+  mkdirp(`${pdfDir}/privKeyWIFs`, err => {})
+
+  // root seed buffer
+  const rootSeed = BITBOX.Mnemonic.toSeed(mnemonicObj.mnemonic)
+
+  // master HDNode
+  const masterHDNode = BITBOX.HDNode.fromSeed(rootSeed)
+
+  // BIP44
+  const bip44 = BITBOX.HDNode.derivePath(masterHDNode, "m/44'/145'")
+
+  for (let i = 0; i < addressCount; i++) {
+    console.log(`html: ${i}`)
+    await sleep(100)
+    // derive the ith external change address from the BIP44 account HDNode
+    const node = BITBOX.HDNode.derivePath(
+      bip44,
+      //`${result.hdAccount ? result.hdAccount : 0}'/0/${i}`
+      `0'/0/${i}`
+    )
+
+    // get the priv key in wallet import format
+    const wif = BITBOX.HDNode.toWIF(node)
+    addresses.push({
+      wif: wif
+    })
+
+    // create empty html file
+    touch(`${htmlDir}/privKeyWIFs/paper-wallet-wif-${i}.html`)
+
+    // create qr code
+    QRCode.toDataURL(wif, (err, wifQR) => {
+      // save to html file
+      fs.writeFileSync(
+        `${htmlDir}/privKeyWIFs/paper-wallet-wif-${i}.html`,
+        htmlTemplate(wifQR)
       )
-      process.exit(0)
+    })
+  }
+
+  for (let i = 0; i < addressCount; i++) {
+    console.log(`pdf: ${i}`)
+    await sleep(2000)
+
+    // save to pdf
+    var options = {
+      width: "170mm",
+      height: "260mm"
     }
 
-    // create needed directory structure
-    const htmlDir = `${__dirname}/../output/html`
-    mkdirp(`${htmlDir}`, err => {})
-    mkdirp(`${htmlDir}/${result.eventName}`, err => {})
-    mkdirp(`${htmlDir}/${result.eventName}/privKeyWIFs`, err => {})
+    // get html file
+    const privKeyWIFsHtml = fs.readFileSync(
+      `${htmlDir}/privKeyWIFs/paper-wallet-wif-${i}.html`,
+      "utf8"
+    )
 
-    const pdfDir = `${__dirname}/../output/pdf`
-    mkdirp(`${pdfDir}`, err => {})
-    mkdirp(`${pdfDir}/${result.eventName}`, err => {})
-    mkdirp(`${pdfDir}/${result.eventName}/privKeyWIFs`, err => {})
-
-    // root seed buffer
-    const rootSeed = BITBOX.Mnemonic.toSeed(mnemonicObj.mnemonic)
-
-    // master HDNode
-    const masterHDNode = BITBOX.HDNode.fromSeed(rootSeed)
-
-    // BIP44
-    const bip44 = BITBOX.HDNode.derivePath(masterHDNode, "m/44'/145'")
-
-    for (let i = 0; i < result.addressCount; i++) {
-      console.log(`html: ${i}`)
-      await sleep(100)
-      // derive the ith external change address from the BIP44 account HDNode
-      const node = BITBOX.HDNode.derivePath(
-        bip44,
-        //`${result.hdAccount ? result.hdAccount : 0}'/0/${i}`
-        `0'/0/${i}`
-      )
-
-      // get the priv key in wallet import format
-      const wif = BITBOX.HDNode.toWIF(node)
-      addresses.push({
-        wif: wif
+    // save to pdf
+    pdf
+      .create(privKeyWIFsHtml, options)
+      .toFile(`${pdfDir}/privKeyWIFs/paper-wallet-wif-${i}.pdf`, (err, res) => {
+        if (err) return console.log(err)
       })
-
-      // create empty html file
-      touch(
-        `${htmlDir}/${result.eventName}/privKeyWIFs/paper-wallet-wif-${i}.html`
-      )
-
-      // create qr code
-      QRCode.toDataURL(wif, (err, wifQR) => {
-        // save to html file
-        fs.writeFileSync(
-          `${htmlDir}/${
-            result.eventName
-          }/privKeyWIFs/paper-wallet-wif-${i}.html`,
-          htmlTemplate(wifQR)
-        )
-      })
-    }
-
-    for (let i = 0; i < result.addressCount; i++) {
-      console.log(`pdf: ${i}`)
-      await sleep(2000)
-
-      // save to pdf
-      var options = {
-        width: "170mm",
-        height: "260mm"
-      }
-
-      // get html file
-      const privKeyWIFsHtml = fs.readFileSync(
-        `${htmlDir}/${result.eventName}/privKeyWIFs/paper-wallet-wif-${i}.html`,
-        "utf8"
-      )
-
-      // save to pdf
-      pdf
-        .create(privKeyWIFsHtml, options)
-        .toFile(
-          `${pdfDir}/${result.eventName}/privKeyWIFs/paper-wallet-wif-${i}.pdf`,
-          (err, res) => {
-            if (err) return console.log(err)
-          }
-        )
-    }
-    console.log(chalk.green("All done."), emoji.get(":white_check_mark:"))
-    console.log(emoji.get(":rocket:"), `html and pdfs written successfully.`)
-  })
+  }
+  console.log(chalk.green("All done."), emoji.get(":white_check_mark:"))
+  console.log(emoji.get(":rocket:"), `html and pdfs written successfully.`)
 }
 
 main()
