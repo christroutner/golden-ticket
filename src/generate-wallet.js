@@ -12,10 +12,10 @@ const main = async () => {
   prompt.start()
 
   // ask for language, hdpath and walletFileName
-  prompt.get(["language", "hdpath", "walletFileName"], (err, result) => {
+  prompt.get(["language"], (err, result) => {
     // generate mnemonic based on language input. Default to english
     const mnemonic = BITBOX.Mnemonic.generate(
-      256,
+      128,
       BITBOX.Mnemonic.wordLists()[
         result.language ? result.language.toLowerCase() : "english"
       ]
@@ -30,9 +30,10 @@ const main = async () => {
     const masterHDNode = BITBOX.HDNode.fromSeed(rootSeed)
 
     // set the hdpath based on input. Default to BCH BIP44
-    let hdpath
-    if (result.hdpath) hdpath = result.hdpath
-    else hdpath = "m/44'/145'/0'"
+    //let hdpath
+    //if (result.hdpath) hdpath = result.hdpath
+    //else hdpath = "m/44'/145'/0'"
+    const hdpath = "m/44'/145'/0'"
 
     const mothershipHDPath = "m/44'/145'/1'/0/0"
 
@@ -45,7 +46,7 @@ const main = async () => {
 
     // show mothership address qr code
     console.log(`Fund the mothership at: ${mothershipAddress}\n`)
-    qrcode.generate(mothershipAddress)
+    qrcode.generate(mothershipAddress, { small: true })
 
     // mnemonic, hdpath and mothership address to save in basic wallet
     const mnemonicObj = {
@@ -57,11 +58,12 @@ const main = async () => {
     }
 
     // get walletFileName from user. Default to wallet.json
-    let wfn = "goldenTicketWallet.json"
-    if (result.walletFileName) wfn = `${result.walletFileName}.json`
+    const wfn = `motherShipWallet.json`
+    //if (result.walletFileName) wfn = `${result.walletFileName}.json`
+    const filename = `${__dirname}/../output/wallets/${wfn}`
 
     // Write out the basic wallet into a json file for other scripts  to use.
-    fs.writeFile(`${wfn}`, JSON.stringify(mnemonicObj, null, 2), err => {
+    fs.writeFile(filename, JSON.stringify(mnemonicObj, null, 2), err => {
       if (err) return console.error(err)
 
       console.log(chalk.green("All done."), emoji.get(":white_check_mark:"))

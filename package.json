@@ -23,7 +23,7 @@
     "touch": "^3.1.0"
   },
   "scripts": {
-    "generate-wallet": "node generate-wallet.js",
+    "generate-wallet": "node src/generate-wallet.js",
     "create-addresses": "node create-addresses.js",
     "create-csv": "node create-csv.js",
     "fund-mothership": "node fund-mothership.js",
