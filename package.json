@@ -2,7 +2,10 @@
   "name": "golden-ticket",
   "license": "MIT",
   "description": "Event paper wallet generator",
-  "author": "Gabriel Cardona @ Bitcoin.com",
+  "author": "Chris Troutner <chris.troutner@gmail.com>",
+  "contributors": [
+    "Gabriel Cardona <gabriel@bitcoin.com>"
+  ],
   "version": "0.0.1",
   "dependencies": {
     "bitbox-sdk": "^5.1.1",
@@ -26,7 +29,7 @@
     "generate-wallet": "node src/generate-wallet.js",
     "create-addresses": "node src/create-addresses.js",
     "create-csv": "node src/create-csv.js",
-    "fund-mothership": "node src/fund-mothership.js",
+    "show-mother": "node src/show-mother-qr.js",
     "fund-addresses": "node src/fund-addresses.js",
     "check-addresses": "node src/check-addresses.js",
     "reclaim-funds": "node src/reclaim-funds.js",
