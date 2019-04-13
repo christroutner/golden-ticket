@@ -19,15 +19,19 @@ const main = async () => {
   prompt.get(["eventName", "addressCount"], async (err, result) => {
     const json2csvCallback = (err, csv) => {
       if (err) throw err
-      fs.writeFile(`${result.eventName}.csv`, csv, err => {
-        if (err) return console.error(err)
+      fs.writeFile(
+        `${__dirname}/../output/csv/${result.eventName}.csv`,
+        csv,
+        err => {
+          if (err) return console.error(err)
 
-        console.log(chalk.green("All done."), emoji.get(":white_check_mark:"))
-        console.log(
-          emoji.get(":rocket:"),
-          `${result.eventName} written successfully.`
-        )
-      })
+          console.log(chalk.green("All done."), emoji.get(":white_check_mark:"))
+          console.log(
+            emoji.get(":rocket:"),
+            `${result.eventName} written successfully.`
+          )
+        }
+      )
     }
     let mnemonicObj
     try {

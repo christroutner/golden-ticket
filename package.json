@@ -25,12 +25,12 @@
   "scripts": {
     "generate-wallet": "node src/generate-wallet.js",
     "create-addresses": "node src/create-addresses.js",
-    "create-csv": "node create-csv.js",
-    "fund-mothership": "node fund-mothership.js",
-    "fund-addresses": "node fund-addresses.js",
-    "check-addresses": "node check-addresses.js",
-    "reclaim-funds": "node reclaim-funds.js",
-    "generate-stats": "node generate-stats.js"
+    "create-csv": "node src/create-csv.js",
+    "fund-mothership": "node src/fund-mothership.js",
+    "fund-addresses": "node src/fund-addresses.js",
+    "check-addresses": "node src/check-addresses.js",
+    "reclaim-funds": "node src/reclaim-funds.js",
+    "generate-stats": "node src/generate-stats.js"
   },
   "devDependencies": {
     "coveralls": "^3.0.2",
