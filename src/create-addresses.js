@@ -63,9 +63,7 @@ const main = async () => {
 
     // get the priv key in wallet import format
     const wif = BITBOX.HDNode.toWIF(node)
-    addresses.push({
-      wif: wif
-    })
+    //console.log(`WIF for address ${i}: ${wif}`)
 
     // create empty html file
     touch(`${htmlDir}/privKeyWIFs/paper-wallet-wif-${i}.html`)

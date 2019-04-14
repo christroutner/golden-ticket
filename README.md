@@ -15,7 +15,7 @@ This repository is forked from
 
 ## Installation
 
-[Step-by-step Video Instructions](https://youtu.be/qFGjQ277h_A)
+[Step-by-step Video Instructions on YouTube](https://youtu.be/qFGjQ277h_A)
 
 Install [NodeJS](http://nodejs.org/) LTS version 8.x or greater.
 

@@ -1,4 +1,10 @@
+/*
+  Generate a CSV file showing which of the tips have been claimed and which
+  ones haven't.
+*/
+
 "use strict"
+
 const BITBOXSDK = require("bitbox-sdk")
 const BITBOX = new BITBOXSDK()
 const converter = require("json-2-csv")
@@ -32,28 +38,34 @@ const main = async () => {
 
   // HDNode of BIP44 account
   const bip44 = BITBOX.HDNode.derivePath(masterHDNode, `m/44'/145'`)
-  for (let i = 0; i <= addressCount; i++) {
+  for (let i = 0; i < addressCount; i++) {
+    // Sleep a little more than 1 second so the program doesn't trip the
+    // freemium rate limits for rest.bitcoin.com.
     await sleep(1100)
+
     // derive the ith external change address HDNode
     const node = BITBOX.HDNode.derivePath(bip44, `0'/0/${i}`)
 
     // get the cash address
     const cashAddress = BITBOX.HDNode.toCashAddress(node)
-    const details = await BITBOX.Address.details([cashAddress])
+    const details = await BITBOX.Address.details(cashAddress)
+    //console.log(`details: ${JSON.stringify(details, null, 2)}`)
 
     const wif = BITBOX.HDNode.toWIF(node)
 
-    const value = 1
+    const claimed = details.balance === 0
 
     const obj = {
       cashAddress: cashAddress,
       wif: wif,
-      claimed: details[0].balance === 0
+      claimed: claimed
     }
-    obj.value = value
+
+    if (claimed) obj.BCHvalue = 0
+    else obj.BCHvalue = details.balance
 
     addresses.push(obj)
-    console.log(i, cashAddress, wif, value, obj.claimed)
+    console.log(i, cashAddress, wif, obj.BCHvalue, obj.claimed)
   }
   converter.json2csv(addresses, json2csvCallback)
 }
