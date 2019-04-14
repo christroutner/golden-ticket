@@ -51,3 +51,11 @@ weather or not they have been claimed (or not).
 
 - `npm run reclaim-funds` reclaim any unspent tips by sending them to an address
 of your choosing.
+
+## Multiple Sessions
+It may be necessary to create tips for multiple events or sessions at once. After
+you created and funded the tips, create a `.zip` backup of the `output` directory.
+You can then restore the `output` directory and everything you need to make the
+commands work will be in-place. Swapping out different copies of the `output`
+directory will allow you to work with multiple sets of mothership and children
+wallets.
