@@ -63,19 +63,41 @@ const main = async () => {
 
     // get the priv key in wallet import format
     const wif = BITBOX.HDNode.toWIF(node)
-    //console.log(`WIF for address ${i}: ${wif}`)
+    console.log(`WIF for address ${i}: ${wif}`)
+
+    // Get the public key for the WIF.
+    const pubAddr = BITBOX.HDNode.toCashAddress(node)
+    console.log(`pubAddr: ${pubAddr}`)
 
     // create empty html file
     touch(`${htmlDir}/privKeyWIFs/paper-wallet-wif-${i}.html`)
 
-    // create qr code
-    QRCode.toDataURL(wif, (err, wifQR) => {
-      // save to html file
-      fs.writeFileSync(
-        `${htmlDir}/privKeyWIFs/paper-wallet-wif-${i}.html`,
-        htmlTemplate(wifQR)
-      )
-    })
+    // // create qr code
+    // QRCode.toDataURL(wif, (err, wifQR) => {
+    //   // save to html file
+    //   fs.writeFileSync(
+    //     `${htmlDir}/privKeyWIFs/paper-wallet-wif-${i}.html`,
+    //     htmlTemplate(wifQR)
+    //   )
+    // })
+
+    const qrOptions = {
+      width: 250
+    }
+
+    const wifQR = await QRCode.toDataURL(wif, qrOptions)
+
+    const pubQR = await QRCode.toDataURL(pubAddr, qrOptions)
+
+    // Generate an HTML page from the dat.
+    const htmlConfig = { pubAddr, pubQR, wifQR, wif }
+    const htmlData = htmlTemplate(htmlConfig)
+
+    // save to html file
+    fs.writeFileSync(
+      `${htmlDir}/privKeyWIFs/paper-wallet-wif-${i}.html`,
+      htmlData
+    )
   }
 
   for (let i = 0; i < addressCount; i++) {
@@ -84,8 +106,9 @@ const main = async () => {
 
     // save to pdf
     var options = {
-      width: "170mm",
-      height: "260mm"
+      width: "270mm",
+      height: "160mm"
+      // type: 'jpeg'
     }
 
     // get html file

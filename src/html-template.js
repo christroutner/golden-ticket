@@ -4,23 +4,51 @@
 
 "use strict"
 
-const htmlTemplate = function(wifQR) {
+const htmlTemplate = function(config) {
+  const { pubAddr, pubQR, wifQR, wif } = config
+
   return `
   <body style="padding: 0; margin: 0;">
-    <div style="border: 1px solid black; width: 350px; height: 400px; padding: 25px;">
-      <center>
-      <p>Here is a tip in Bitcoin Cash!</p>
-      <p>Scan the QR code below with a BCH wallet to collect your tip.</p>
-      <img src='${wifQR}' />
-      <p>Need a wallet? Get one here:</p>
-      </center>
-      <ul style="padding-left: 75px;">
-      <li>Phone: wallet.bitcoin.com</li>
-      <li>Web Browser: badger.bitcoin.com</li>
-      </ul>
+    <div style="border: 1px solid black; width: 700px; height: 400px; padding: 25px;">
+      <h3>${pubAddr}</h3>
+
+      <table>
+        <tr>
+          <td style="border: 1px solid black;">
+            <h3>Public Address</h3>
+            <img src='${pubQR}' />
+          </td>
+          <td style="width: 200px;">
+            <center>
+              <h2>Bitcoin</h2>
+              <h2>Cash</h2>
+              <p>Paper Wallet</p>
+            </center>
+          </td>
+          <td style="border: 1px solid black;">
+            <h3>Private Key</h3>
+            <img src='${wifQR}' />
+          </td>
+        </tr>
+      </table>
+
+      <h4>${wif}</h4>
     </div>
   </body>
 `
 }
 
 module.exports = htmlTemplate
+
+/*
+<center>
+<p>Here is a tip in Bitcoin Cash!</p>
+<p>Scan the QR code below with a BCH wallet to collect your tip.</p>
+<img src='${wifQR}' />
+<p>Need a wallet? Get one here:</p>
+</center>
+<ul style="padding-left: 75px;">
+<li>Phone: wallet.bitcoin.com</li>
+<li>Web Browser: badger.bitcoin.com</li>
+</ul>
+*/
