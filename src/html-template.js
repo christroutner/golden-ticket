@@ -10,7 +10,7 @@ const htmlTemplate = function(config) {
   return `
   <body style="padding: 0; margin: 0;">
     <div style="border: 1px solid black; width: 700px; height: 400px; padding: 25px;">
-      <h3>${pubAddr}</h3>
+      <h3 style="font-family: Lucida Console, monospace; font-size: 22;">${pubAddr}</h3>
 
       <table>
         <tr>
@@ -20,9 +20,9 @@ const htmlTemplate = function(config) {
           </td>
           <td style="width: 200px;">
             <center>
-              <h2>Bitcoin</h2>
-              <h2>Cash</h2>
-              <p>Paper Wallet</p>
+              <h1>Bitcoin</h1>
+              <h1>Cash</h1>
+              <h3>Paper Wallet</h3>
             </center>
           </td>
           <td style="border: 1px solid black;">
@@ -32,7 +32,9 @@ const htmlTemplate = function(config) {
         </tr>
       </table>
 
-      <h4>${wif}</h4>
+      <h3 style="font-family: Lucida Console, monospace; font-size: 22;">
+        ${wif}
+      </h3>
     </div>
   </body>
 `
